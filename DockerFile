@@ -1,0 +1,20 @@
+# Dockerfile template pour microservice
+# -----------------------------
+# Placeholder: le langage/framework sera défini par l'équipe plus tard
+# Pour l'instant, on utilise une image de base générique
+# -----------------------------
+
+# Image de base générique (à adapter plus tard selon le langage)
+FROM alpine:latest
+
+# Dossier de travail dans le conteneur
+WORKDIR /app
+
+# Copier tous les fichiers du repo dans le conteneur
+COPY . .
+
+# Commande par défaut (à remplacer par la commande du microservice)
+CMD ["echo", "Microservice placeholder - code à ajouter"]
+
+# Exposer un port générique (à adapter plus tard)
+EXPOSE 8080
