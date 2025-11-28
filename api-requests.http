@@ -1,0 +1,132 @@
+### Créer un vendeur
+POST http://localhost:8081/api/vendors
+Content-Type: application/json
+
+{
+  "name": "SoukScan Suppliers",
+  "description": "Fournisseur principal de produits alimentaires",
+  "email": "contact@soukscan-suppliers.com",
+  "phone": "+212 5 22 00 00 00",
+  "address": "Zone Industrielle Ain Sebaa",
+  "city": "Casablanca",
+  "country": "Maroc",
+  "postalCode": "20250",
+  "taxId": "MAR123456789",
+  "rating": 4.8
+}
+
+###
+
+### Récupérer tous les vendeurs
+GET http://localhost:8081/api/vendors
+
+###
+
+### Récupérer un vendeur par ID
+GET http://localhost:8081/api/vendors/1
+
+###
+
+### Récupérer les vendeurs actifs
+GET http://localhost:8081/api/vendors/active
+
+###
+
+### Récupérer les vendeurs par ville
+GET http://localhost:8081/api/vendors/city/Casablanca
+
+###
+
+### Rechercher des vendeurs par nom
+GET http://localhost:8081/api/vendors/search?name=SoukScan
+
+###
+
+### Mettre à jour un vendeur
+PUT http://localhost:8081/api/vendors/1
+Content-Type: application/json
+
+{
+  "name": "SoukScan Suppliers Premium",
+  "description": "Fournisseur principal de produits alimentaires certifiés bio",
+  "email": "contact@soukscan-suppliers.com",
+  "phone": "+212 5 22 00 00 01",
+  "address": "Zone Industrielle Ain Sebaa - Nouveau Site",
+  "city": "Casablanca",
+  "country": "Maroc",
+  "postalCode": "20250",
+  "taxId": "MAR123456789",
+  "rating": 4.9
+}
+
+###
+
+### Basculer le statut d'un vendeur
+PATCH http://localhost:8081/api/vendors/1/toggle-status
+
+###
+
+### Supprimer un vendeur
+DELETE http://localhost:8081/api/vendors/1
+
+###
+
+### Créer plusieurs vendeurs pour les tests
+
+### Vendeur 2 - Rabat
+POST http://localhost:8081/api/vendors
+Content-Type: application/json
+
+{
+  "name": "Atlas Trading",
+  "description": "Importateur et distributeur de produits d'épicerie",
+  "email": "info@atlas-trading.ma",
+  "phone": "+212 5 37 00 00 00",
+  "address": "Avenue Hassan II",
+  "city": "Rabat",
+  "country": "Maroc",
+  "postalCode": "10000",
+  "taxId": "MAR987654321",
+  "rating": 4.2
+}
+
+###
+
+### Vendeur 3 - Tanger
+POST http://localhost:8081/api/vendors
+Content-Type: application/json
+
+{
+  "name": "Mediterranean Foods",
+  "description": "Spécialiste des produits frais et surgelés",
+  "email": "contact@medfood.ma",
+  "phone": "+212 5 39 00 00 00",
+  "address": "Zone Franche de Tanger",
+  "city": "Tanger",
+  "country": "Maroc",
+  "postalCode": "90000",
+  "taxId": "MAR456789123",
+  "rating": 4.6
+}
+
+###
+
+### Vendeur 4 - Marrakech
+POST http://localhost:8081/api/vendors
+Content-Type: application/json
+
+{
+  "name": "Souss Distribution",
+  "description": "Distributeur régional de produits agricoles",
+  "email": "commercial@souss-distrib.ma",
+  "phone": "+212 5 24 00 00 00",
+  "address": "Route de Safi, Km 12",
+  "city": "Marrakech",
+  "country": "Maroc",
+  "postalCode": "40000",
+  "taxId": "MAR741852963",
+  "rating": 4.4
+}
+
+###
+

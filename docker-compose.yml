@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  vendor-service:
+    build: .
+    container_name: vendor-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-purple-violet-a-pooler.eu-central-1.aws.neon.tech:5432/vendor_db?sslmode=require
+      - SPRING_DATASOURCE_USERNAME=neondb_owner
+      - SPRING_DATASOURCE_PASSWORD=npg_9zLEfBC3ZlDs
+      - PRODUCT_SERVICE_URL=http://product-service:8082/api/products
+    networks:
+      - soukscan-network
+    restart: unless-stopped
+
+networks:
+  soukscan-network:
+    external: true
+

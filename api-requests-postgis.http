@@ -1,0 +1,282 @@
+### VENDOR SERVICE API - POSTGIS EDITION
+### Port: 8081
+
+### =====================================================
+### LOCATIONS (Vendor Locations with Geographic Data)
+### =====================================================
+
+### 1. Créer une location pour un vendor (Casablanca)
+POST http://localhost:8081/api/locations
+Content-Type: application/json
+
+{
+  "vendorId": "vendor-001",
+  "name": "Marché Central Casablanca",
+  "address": "Boulevard Mohammed V, Casablanca",
+  "latitude": 33.5731,
+  "longitude": -7.5898
+}
+
+###
+
+### 2. Créer une location (Rabat)
+POST http://localhost:8081/api/locations
+Content-Type: application/json
+
+{
+  "vendorId": "vendor-002",
+  "name": "Souk Rabat",
+  "address": "Avenue Hassan II, Rabat",
+  "latitude": 34.0209,
+  "longitude": -6.8416
+}
+
+###
+
+### 3. Créer une location (Marrakech)
+POST http://localhost:8081/api/locations
+Content-Type: application/json
+
+{
+  "vendorId": "vendor-003",
+  "name": "Souk Marrakech",
+  "address": "Place Jemaa el-Fna, Marrakech",
+  "latitude": 31.6295,
+  "longitude": -7.9811
+}
+
+###
+
+### 4. Récupérer toutes les locations
+GET http://localhost:8081/api/locations
+
+###
+
+### 5. Récupérer une location spécifique
+GET http://localhost:8081/api/locations/vendor-001
+
+###
+
+### 6. Trouver les locations à proximité (5 km autour de Casablanca centre)
+GET http://localhost:8081/api/locations/nearby?latitude=33.5731&longitude=-7.5898&radius=5
+
+###
+
+### 7. Trouver les 10 locations les plus proches
+GET http://localhost:8081/api/locations/nearest?latitude=33.5731&longitude=-7.5898&limit=10
+
+###
+
+### 8. Mettre à jour une location
+PUT http://localhost:8081/api/locations/vendor-001
+Content-Type: application/json
+
+{
+  "vendorId": "vendor-001",
+  "name": "Marché Central Casablanca - Nouvelle Adresse",
+  "address": "Boulevard Mohammed V, Quartier des Habous, Casablanca",
+  "latitude": 33.5731,
+  "longitude": -7.5898
+}
+
+###
+
+### 9. Supprimer une location
+DELETE http://localhost:8081/api/locations/vendor-003
+
+###
+
+### =====================================================
+### PRICE REPORTS (Rapports de Prix)
+### =====================================================
+
+### 10. Créer un rapport de prix
+POST http://localhost:8081/api/price-reports
+Content-Type: application/json
+
+{
+  "productId": "product-001",
+  "vendorId": "vendor-001",
+  "price": 25.50
+}
+
+###
+
+### 11. Créer plusieurs rapports de prix pour le même produit
+POST http://localhost:8081/api/price-reports
+Content-Type: application/json
+
+{
+  "productId": "product-001",
+  "vendorId": "vendor-002",
+  "price": 27.00
+}
+
+###
+
+### 12. Autre rapport de prix
+POST http://localhost:8081/api/price-reports
+Content-Type: application/json
+
+{
+  "productId": "product-002",
+  "vendorId": "vendor-001",
+  "price": 15.75
+}
+
+###
+
+### 13. Récupérer tous les rapports de prix
+GET http://localhost:8081/api/price-reports
+
+###
+
+### 14. Récupérer les rapports de prix pour un produit spécifique
+GET http://localhost:8081/api/price-reports/product/product-001
+
+###
+
+### 15. Récupérer les rapports de prix d'un vendor spécifique
+GET http://localhost:8081/api/price-reports/vendor/vendor-001
+
+###
+
+### 16. Récupérer les rapports de prix récents (7 derniers jours)
+GET http://localhost:8081/api/price-reports/product/product-001/recent?days=7
+
+###
+
+### 17. Récupérer les prix d'un produit à proximité d'une location (10 km)
+GET http://localhost:8081/api/price-reports/product/product-001/nearby?latitude=33.5731&longitude=-7.5898&radius=10
+
+###
+
+### 18. Supprimer un rapport de prix
+DELETE http://localhost:8081/api/price-reports/1
+
+###
+
+### =====================================================
+### PRICE AVERAGES (Prix Moyens)
+### =====================================================
+
+### 19. Récupérer tous les prix moyens
+GET http://localhost:8081/api/price-averages
+
+###
+
+### 20. Récupérer le prix moyen d'un produit
+GET http://localhost:8081/api/price-averages/product-001
+
+###
+
+### 21. Récupérer les produits dans une fourchette de prix
+GET http://localhost:8081/api/price-averages/range?min=20.00&max=30.00
+
+###
+
+### 22. Récupérer les 10 produits les moins chers
+GET http://localhost:8081/api/price-averages/cheapest?limit=10
+
+###
+
+### =====================================================
+### SCÉNARIOS D'UTILISATION AVANCÉS
+### =====================================================
+
+### Scénario 1: Créer plusieurs vendors dans différentes villes du Maroc
+
+### Vendor à Tanger
+POST http://localhost:8081/api/locations
+Content-Type: application/json
+
+{
+  "vendorId": "vendor-004",
+  "name": "Marché Tanger",
+  "address": "Grand Socco, Tanger",
+  "latitude": 35.7595,
+  "longitude": -5.8339
+}
+
+###
+
+### Vendor à Fès
+POST http://localhost:8081/api/locations
+Content-Type: application/json
+
+{
+  "vendorId": "vendor-005",
+  "name": "Souk Fès el-Bali",
+  "address": "Médina de Fès, Fès",
+  "latitude": 34.0631,
+  "longitude": -4.9766
+}
+
+###
+
+### Vendor à Agadir
+POST http://localhost:8081/api/locations
+Content-Type: application/json
+
+{
+  "vendorId": "vendor-006",
+  "name": "Marché Agadir",
+  "address": "Souk El Had, Agadir",
+  "latitude": 30.4278,
+  "longitude": -9.5981
+}
+
+###
+
+### Scénario 2: Ajouter des prix pour différents produits
+
+### Prix du pain à Casablanca
+POST http://localhost:8081/api/price-reports
+Content-Type: application/json
+
+{
+  "productId": "pain-blanc",
+  "vendorId": "vendor-001",
+  "price": 1.50
+}
+
+###
+
+### Prix du pain à Rabat
+POST http://localhost:8081/api/price-reports
+Content-Type: application/json
+
+{
+  "productId": "pain-blanc",
+  "vendorId": "vendor-002",
+  "price": 1.60
+}
+
+###
+
+### Prix de l'huile d'olive
+POST http://localhost:8081/api/price-reports
+Content-Type: application/json
+
+{
+  "productId": "huile-olive",
+  "vendorId": "vendor-001",
+  "price": 85.00
+}
+
+###
+
+### Scénario 3: Recherche de prix à proximité d'un utilisateur
+### Exemple: Un utilisateur est au centre de Casablanca et cherche les prix du pain dans un rayon de 5 km
+
+GET http://localhost:8081/api/price-reports/product/pain-blanc/nearby?latitude=33.5731&longitude=-7.5898&radius=5
+
+###
+
+### Scénario 4: Trouver les vendeurs les plus proches
+### Exemple: Trouver les 5 vendeurs les plus proches de ma position actuelle
+
+GET http://localhost:8081/api/locations/nearest?latitude=33.5731&longitude=-7.5898&limit=5
+
+###
+
