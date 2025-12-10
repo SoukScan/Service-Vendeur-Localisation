@@ -24,3 +24,11 @@ jobs:
 
       - name: Trivy scan (image)
         run: trivy image --exit-code 1 --severity HIGH,CRITICAL soukscan-vendeur-localisation:latest
+
+        on:
+  push:
+    branches: ["main"]   # change if your default branch isn’t main
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: {}
+
