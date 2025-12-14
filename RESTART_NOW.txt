@@ -1,0 +1,57 @@
+================================================================================
+                   CORRECTION CORS APPLIQUÉE - REDÉMARRAGE REQUIS
+================================================================================
+
+PROBLÈME RÉSOLU :
+  Erreur 500 : "allowedOrigins cannot contain the special value '*'"
+
+SOLUTION :
+  ✅ CorsConfig.java modifié
+  ✅ allowedOrigins() → allowedOriginPatterns()
+
+================================================================================
+                              ACTION IMMÉDIATE
+================================================================================
+
+1. ARRÊTER L'APPLICATION
+   └─ Dans le terminal : Ctrl + C
+
+2. REDÉMARRER
+   └─ Exécutez : restart.bat
+   └─ OU : start.bat
+
+3. TESTER
+   └─ Navigateur : http://localhost:8081/api/vendors
+   └─ Résultat attendu : []
+
+================================================================================
+                              SCRIPTS DISPONIBLES
+================================================================================
+
+  restart.bat          → Redémarrage rapide (arrête + démarre)
+  start.bat            → Démarrage standard
+  test-start.bat       → Démarrage avec vérifications
+
+================================================================================
+                            DOCUMENTATION COMPLÈTE
+================================================================================
+
+  CORS_FIX.md                 → Détails de cette correction
+  ALL_FIXES_APPLIED.md        → Toutes les corrections effectuées
+  QUICK_START_GUIDE.md        → Guide de démarrage
+  TROUBLESHOOTING.md          → En cas de problème
+
+================================================================================
+                           VÉRIFICATION RAPIDE
+================================================================================
+
+  ✅ Voir "Started VendormsApplication" dans les logs
+  ✅ http://localhost:8081/api/vendors retourne []
+  ✅ Pas d'erreur 500 dans le navigateur
+
+================================================================================
+
+STATUT : ✅ CORRECTION APPLIQUÉE - REDÉMARREZ MAINTENANT !
+
+================================================================================
+

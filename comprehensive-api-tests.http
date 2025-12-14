@@ -1,0 +1,130 @@
+### Comprehensive Price Reporting API Tests - With Undo/Modify Functionality
+
+### ANTI-DUPLICATE MECHANISM TEST
+
+### Test 1: First user reports price
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 5,
+  "price": 100.00,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 101,
+  "shopName": "Electronics Shop"
+}
+# Expected: Success - creates new shop and report
+
+### Test 2: Same user tries to report again SAME DAY (should be prevented)
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 5,
+  "price": 120.00,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 101
+}
+# Expected: No duplicate report created, original price maintained
+
+### Test 3: Different user reports (should work)
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 5,
+  "price": 95.00,
+  "latitude": 33.5899,
+  "longitude": -7.6039,
+  "userId": 102
+}
+# Expected: Success - intelligent price averaging
+
+---
+
+### USER HISTORY AND MANAGEMENT
+
+### Test 4: Get user's report history
+GET http://localhost:8081/api/price-report/my-reports?userId=101&limit=10
+# Expected: List of user's recent reports
+
+### Test 5: Check if user can modify a report
+GET http://localhost:8081/api/price-report/can-modify/1?userId=101
+# Expected: {"canModify": true/false, "reportId": 1, "userId": 101}
+
+---
+
+### MODIFY FUNCTIONALITY
+
+### Test 6: Modify an existing report (within 24h)
+PUT http://localhost:8081/api/price-report/modify/1
+Content-Type: application/json
+
+{
+  "price": 105.00,
+  "userId": 101
+}
+# Expected: Success - price updated with intelligent recalculation
+
+### Test 7: Try to modify someone else's report (should fail)
+PUT http://localhost:8081/api/price-report/modify/1
+Content-Type: application/json
+
+{
+  "price": 80.00,
+  "userId": 999
+}
+# Expected: Error - "You can only modify your own price reports"
+
+### Test 8: Try to modify with invalid price (should fail)
+PUT http://localhost:8081/api/price-report/modify/1
+Content-Type: application/json
+
+{
+  "price": -10.00,
+  "userId": 101
+}
+# Expected: Error - "Price must be greater than 0"
+
+---
+
+### UNDO FUNCTIONALITY
+
+### Test 9: Undo a report (within 24h)
+DELETE http://localhost:8081/api/price-report/undo/2?userId=102
+# Expected: Success - report removed, prices recalculated
+
+### Test 10: Try to undo someone else's report (should fail)
+DELETE http://localhost:8081/api/price-report/undo/1?userId=999
+# Expected: Error - "You can only undo your own price reports"
+
+### Test 11: Try to undo non-existent report (should fail)
+DELETE http://localhost:8081/api/price-report/undo/99999?userId=101
+# Expected: Error - "Price report not found with ID: 99999"
+
+---
+
+### EDGE CASES
+
+### Test 12: Different user reports same product at same location (next day)
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 5,
+  "price": 98.00,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 101
+}
+# Expected: Success - should work next day (24h window reset)
+
+### Test 13: User history for non-existent user
+GET http://localhost:8081/api/price-report/my-reports?userId=99999&limit=5
+# Expected: Empty list or appropriate message
+
+### Test 14: Health check
+GET http://localhost:8081/api/price-report/health
+# Expected: {"status": "UP", "service": "Price Reporting Service"}

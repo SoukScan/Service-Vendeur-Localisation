@@ -1,0 +1,124 @@
+### ====================================
+### API VENDOR-PRODUCT COMMUNICATION
+### ====================================
+
+### 1. Voir le catalogue complet des produits disponibles
+GET http://localhost:8081/api/vendors/1/products/catalog
+Content-Type: application/json
+
+### 2. Rechercher un produit dans le catalogue
+GET http://localhost:8081/api/vendors/1/products/catalog/search?name=tomate
+Content-Type: application/json
+
+### 3. Ajouter un produit du catalogue au vendor (le produit doit être actif)
+POST http://localhost:8081/api/vendors/1/products
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50
+}
+
+### 4. Ajouter un autre produit au vendor
+POST http://localhost:8081/api/vendors/1/products
+Content-Type: application/json
+
+{
+  "productId": 2,
+  "price": 8.00
+}
+
+### 5. Voir tous les produits d'un vendor (disponibles uniquement)
+GET http://localhost:8081/api/vendors/1/products
+Content-Type: application/json
+
+### 6. Voir tous les produits d'un vendor (incluant non disponibles)
+GET http://localhost:8081/api/vendors/1/products?onlyAvailable=false
+Content-Type: application/json
+
+### 7. Mettre à jour le prix d'un produit du vendor
+PUT http://localhost:8081/api/vendors/1/products/1
+Content-Type: application/json
+
+{
+  "price": 16.00
+}
+
+### 8. Mettre à jour le prix et la disponibilité
+PUT http://localhost:8081/api/vendors/1/products/1
+Content-Type: application/json
+
+{
+  "price": 14.50,
+  "isAvailable": true
+}
+
+### 9. Marquer un produit comme non disponible
+PUT http://localhost:8081/api/vendors/1/products/1
+Content-Type: application/json
+
+{
+  "isAvailable": false
+}
+
+### 10. Retirer un produit du vendor
+DELETE http://localhost:8081/api/vendors/1/products/1
+Content-Type: application/json
+
+### ====================================
+### EXEMPLES AVEC DIFFÉRENTS VENDORS
+### ====================================
+
+### Ajouter des produits au vendor 2
+POST http://localhost:8081/api/vendors/2/products
+Content-Type: application/json
+
+{
+  "productId": 3,
+  "price": 25.00
+}
+
+### Voir les produits du vendor 2
+GET http://localhost:8081/api/vendors/2/products
+Content-Type: application/json
+
+### ====================================
+### SCÉNARIOS D'ERREUR À TESTER
+### ====================================
+
+### Tenter d'ajouter un produit inexistant
+POST http://localhost:8081/api/vendors/1/products
+Content-Type: application/json
+
+{
+  "productId": 9999,
+  "price": 10.00
+}
+
+### Tenter d'ajouter un produit inactif
+POST http://localhost:8081/api/vendors/1/products
+Content-Type: application/json
+
+{
+  "productId": 5,
+  "price": 12.00
+}
+
+### Tenter d'ajouter le même produit deux fois
+POST http://localhost:8081/api/vendors/1/products
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50
+}
+
+### Tenter d'ajouter un produit à un vendor inexistant
+POST http://localhost:8081/api/vendors/9999/products
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50
+}
+

@@ -1,0 +1,169 @@
+### ====================================
+### API QUICK SHOP REPORT - WORKFLOW SÉCURISÉ EN 2 ÉTAPES
+### L'utilisateur doit être physiquement proche du shop
+### ====================================
+
+### ====================================
+### ÉTAPE 1 : RECHERCHER LES SHOPS À PROXIMITÉ
+### ====================================
+
+### 1. Rechercher les shops proches de ma position (rayon 50m)
+GET http://localhost:8081/api/quick-report/nearby-shops?productId=1&lat=33.589886&lon=-7.603869&radius=50
+
+### 2. Rechercher avec un rayon plus large (100m)
+GET http://localhost:8081/api/quick-report/nearby-shops?productId=1&lat=33.589886&lon=-7.603869&radius=100
+
+### 3. Rechercher dans une autre zone
+GET http://localhost:8081/api/quick-report/nearby-shops?productId=2&lat=33.590000&lon=-7.604000&radius=50
+
+### ====================================
+### ÉTAPE 2 : SIGNALER UN PRODUIT (AVEC VALIDATION DE PROXIMITÉ)
+### ====================================
+
+### 4. Signaler un produit dans un shop proche existant (SUCCESS)
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50,
+  "latitude": 33.589886,
+  "longitude": -7.603869,
+  "userId": 101,
+  "vendorId": 16,
+  "searchRadiusMeters": 50
+}
+
+### 5. Créer un nouveau shop (si aucun shop proche détecté)
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50,
+  "latitude": 33.600000,
+  "longitude": -7.620000,
+  "userId": 101,
+  "vendorId": null,
+  "searchRadiusMeters": 50,
+  "shopName": "Épicerie du quartier",
+  "shopAddress": "Rue de la Liberté",
+  "city": "Casablanca",
+  "country": "Maroc"
+}
+
+### 6. Ajouter un autre produit au même shop
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 2,
+  "price": 8.00,
+  "latitude": 33.589886,
+  "longitude": -7.603869,
+  "userId": 102,
+  "vendorId": 16,
+  "searchRadiusMeters": 50
+}
+
+### 7. Mettre à jour le prix d'un produit existant
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 17.00,
+  "latitude": 33.589886,
+  "longitude": -7.603869,
+  "userId": 103,
+  "vendorId": 16,
+  "searchRadiusMeters": 50
+}
+
+### ====================================
+### SCÉNARIOS D'ERREUR À TESTER (VALIDATION DE SÉCURITÉ)
+### ====================================
+
+### ERREUR 1 : Tentative de triche - Utilisateur trop loin du shop (REJETÉ ✅)
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50,
+  "latitude": 33.600000,
+  "longitude": -7.620000,
+  "userId": 101,
+  "vendorId": 16,
+  "searchRadiusMeters": 50
+}
+
+### ERREUR 2 : Tenter de créer un shop alors qu'il en existe un proche (REJETÉ ✅)
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50,
+  "latitude": 33.589886,
+  "longitude": -7.603869,
+  "userId": 101,
+  "vendorId": null,
+  "searchRadiusMeters": 50
+}
+
+### ERREUR 3 : Produit inexistant
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 9999,
+  "price": 10.00,
+  "latitude": 33.589886,
+  "longitude": -7.603869,
+  "userId": 101,
+  "vendorId": 16,
+  "searchRadiusMeters": 50
+}
+
+### ERREUR 4 : Produit inactif
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 5,
+  "price": 10.00,
+  "latitude": 33.589886,
+  "longitude": -7.603869,
+  "userId": 101,
+  "vendorId": 16,
+  "searchRadiusMeters": 50
+}
+
+### ERREUR 5 : Shop inexistant
+POST http://localhost:8081/api/quick-report
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "price": 15.50,
+  "latitude": 33.589886,
+  "longitude": -7.603869,
+  "userId": 101,
+  "vendorId": 9999,
+  "searchRadiusMeters": 50
+}
+
+### ====================================
+### VÉRIFICATIONS POST-SIGNALEMENT
+### ====================================
+
+### Voir tous les shops pour vérifier la création
+GET http://localhost:8081/api/vendors
+
+### Voir les produits d'un shop spécifique
+GET http://localhost:8081/api/vendors/1/products
+
+### Voir les shops déclarés par un utilisateur
+GET http://localhost:8081/api/vendors/declared-by/101
+

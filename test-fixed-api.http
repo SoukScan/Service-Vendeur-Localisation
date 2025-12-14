@@ -1,0 +1,43 @@
+### Test the Fixed Price Reporting API
+
+### Test 1: Your original request that failed
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 2,
+  "price": 500.50,
+  "latitude": 60.5898,
+  "longitude": -10.6038,
+  "userId": 22
+}
+# Expected: Should work now with user tracking
+
+### Test 2: Another user reports different price
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 2,
+  "price": 480.00,
+  "latitude": 60.5899,
+  "longitude": -10.6039,
+  "userId": 23
+}
+# Expected: Should create price consensus
+
+### Test 3: Same user tries to report again (should be prevented)
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 2,
+  "price": 520.00,
+  "latitude": 60.5898,
+  "longitude": -10.6038,
+  "userId": 22
+}
+# Expected: Should be handled gracefully (no duplicate report)
+
+### Health check
+GET http://localhost:8081/api/price-report/health

@@ -1,0 +1,99 @@
+### Enhanced Price Reporting API Tests - User Tracking & Database Optimization
+
+### SCENARIO 1: First user reports price (baseline)
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 15,
+  "price": 25.00,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 101,
+  "shopName": "Tech Market",
+  "gpsAccuracyMeters": 12.0
+}
+# Expected: price = 25.00, new shop created, user 101 recorded
+
+### SCENARIO 2: Same user tries to report again same day (should be handled gracefully)
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 15,
+  "price": 26.00,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 101,
+  "gpsAccuracyMeters": 10.0
+}
+# Expected: No duplicate report created, original price maintained
+
+### SCENARIO 3: Different user reports (builds consensus)
+POST http://localhost:8081/api/price-report  
+Content-Type: application/json
+
+{
+  "productId": 15,
+  "price": 24.50,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 102,
+  "gpsAccuracyMeters": 15.0
+}
+# Expected: Intelligent averaging, consensus building
+
+### SCENARIO 4: Experienced user reports (higher credibility weight)
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 15,
+  "price": 24.75,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 201,
+  "gpsAccuracyMeters": 8.0
+}
+# Expected: Price influenced by user credibility, weighted consensus
+
+### SCENARIO 5: New user reports outlier price
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 15,
+  "price": 50.00,
+  "latitude": 33.5898,
+  "longitude": -7.6038,
+  "userId": 103
+}
+# Expected: Outlier detected, minimal impact on consensus price
+
+### SCENARIO 6: User tracking verification - check traditional price report endpoint
+POST http://localhost:8081/api/price-reports
+Content-Type: application/json
+
+{
+  "productId": "15",
+  "vendorId": "1", 
+  "price": 24.00,
+  "userId": 104
+}
+# Expected: User ID tracked in traditional endpoint too
+
+### SCENARIO 7: Location verification failure - too far
+POST http://localhost:8081/api/price-report
+Content-Type: application/json
+
+{
+  "productId": 15,
+  "price": 25.00,
+  "latitude": 33.6000,
+  "longitude": -7.7000,
+  "userId": 105
+}
+# Expected: Error about distance, no user tracking occurs
+
+### Health check
+GET http://localhost:8081/api/price-report/health
