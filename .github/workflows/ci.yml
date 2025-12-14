@@ -27,7 +27,7 @@ jobs:
 
       - name: Build & test with Maven
         run: mvn -B clean verify
-  depcheck:
+depcheck:
     name: Dependency-Check SCA
     runs-on: ubuntu-latest
     needs: build-maven
