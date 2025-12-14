@@ -52,7 +52,6 @@ jobs:
             -Dformat=HTML \
             -DfailBuildOnCVSS=7 \
             -Dnvd.api.key=${NVD_API_KEY}
-
       - name: Upload Dependency-Check report
         uses: actions/upload-artifact@v4
         with:
@@ -72,11 +71,8 @@ jobs:
     if: (github.actor != 'dependabot[bot]')
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Semgrep CI
-        run: semgrep ci
+      - uses: actions/checkout@v4
+      - run: semgrep ci
 
   trivy:
     name: Trivy image scan
@@ -84,7 +80,7 @@ jobs:
     needs: build-maven
 
     env:
-      IMAGE_NAME: vendor-ms          # nom de l'image pour le microservice Vendor
+      IMAGE_NAME: vendor-backend         # adapte au nom de ton image
       IMAGE_TAG: ci-${{ github.sha }}
 
     steps:
@@ -98,12 +94,11 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile           # adapte si ton Dockerfile a un autre chemin
+          file: ./Dockerfile           # adapte le chemin si besoin
           push: false
           load: true
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-
       - name: List local images (debug)
         run: docker images
 
@@ -121,7 +116,6 @@ jobs:
           echo "===== trivy-results.sarif ====="
           ls -l
           cat trivy-results.sarif || echo "No SARIF file"
-
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@v3
         if: always()
