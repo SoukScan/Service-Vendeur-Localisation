@@ -27,34 +27,7 @@ jobs:
 
       - name: Build & test with Maven
         run: mvn -B clean verify
-depcheck:
-    name: Dependency-Check SCA
-    runs-on: ubuntu-latest
-    needs: build-maven
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # IMPORTANT : réinitialiser JAVA_HOME comme indiqué dans la doc
-      - name: Run OWASP Dependency-Check
-        uses: dependency-check/Dependency-Check_Action@main
-        id: depcheck
-        env:
-          JAVA_HOME: /opt/jdk
-        with:
-          project: 'service-authentification'  
-          path: '.'                            
-          format: 'HTML'                       
-          out: 'depcheck-reports'
-          args: >
-            --failOnCVSS 7
-            --enableRetired
-      - name: Upload Depcheck report
-        uses: actions/upload-artifact@v4
-        with:
-          name: depcheck-report
-          path: ${{ github.workspace }}/depcheck-reportsdepcheck:
+  depcheck:
     name: Dependency-Check SCA
     runs-on: ubuntu-latest
     needs: build-maven
