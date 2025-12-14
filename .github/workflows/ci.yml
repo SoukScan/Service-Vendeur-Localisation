@@ -61,7 +61,6 @@ jobs:
   semgrep:
     name: semgrep/ci
     runs-on: ubuntu-latest
-    needs: build-maven
     permissions:
       contents: read
     env:
@@ -71,9 +70,11 @@ jobs:
     if: (github.actor != 'dependabot[bot]')
 
     steps:
-      - uses: actions/checkout@v4
-      - run: semgrep ci
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Run Semgrep CI
+        run: semgrep ci
   trivy:
     name: Trivy image scan
     runs-on: ubuntu-latest
