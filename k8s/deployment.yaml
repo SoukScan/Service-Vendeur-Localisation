@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vendor-backend
+  labels:
+    app: vendor-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vendor-backend
+  template:
+    metadata:
+      labels:
+        app: vendor-backend
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+      containers:
+        - name: vendor-backend
+          image: ghcr.io/soukscan/vendor-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
