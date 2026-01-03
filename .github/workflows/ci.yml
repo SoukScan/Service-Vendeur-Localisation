@@ -133,13 +133,14 @@ jobs:
         contents: read
         packages: write
 
-      env:
-        IMAGE_NAME: vendor-backend
-        IMAGE_TAG: ci-${{ github.sha }}
-
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
+
+        - name: Set GHCR image name (lowercase owner)
+          run: |
+            echo "GHCR_IMAGE=ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')/vendor-backend:ci-${{ github.sha }}" >> $GITHUB_ENV
+
 
         - name: Login to GHCR
           uses: docker/login-action@v3
@@ -155,6 +156,6 @@ jobs:
             file: ./Dockerfile
             push: true
             tags: |
-              ghcr.io/${{ github.repository_owner }}/vendor-backend:${{ env.IMAGE_TAG }}
+              ${{ env.GHCR_IMAGE }}
 
       
