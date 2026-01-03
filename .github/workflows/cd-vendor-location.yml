@@ -1,0 +1,130 @@
+name: CD – Service-Vendor-Location 
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "dev1" ]
+  pull_request:
+    branches: [ "dev1" ]
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  IMAGE_NAME: vendor-backend
+  IMAGE_TAG: ci-${{ github.sha }}
+
+jobs:
+  deploy-dev:
+    name: Deploy Vendor Location to Dev (Minikube)
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Build GHCR image reference
+      - name: Set GHCR image name
+        run: |
+          echo "GHCR_IMAGE=ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')/vendor-backend:ci-${{ github.sha }}" >> $GITHUB_ENV
+
+      # 3️⃣ Setup Minikube
+      - name: Setup Minikube
+        uses: medyagh/setup-minikube@latest
+
+      - name: Start Minikube
+        run: |
+          minikube start --wait all
+          minikube addons enable ingress
+
+      # 4️⃣ Login to GHCR
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      # 5️⃣ Use Minikube Docker daemon
+      - name: Use Minikube Docker daemon
+        run: eval $(minikube docker-env)
+
+      # 6️⃣ Create GHCR pull secret
+      - name: Create GHCR image pull secret
+        run: |
+          kubectl create secret docker-registry ghcr-pull-secret \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.repository_owner }} \
+            --docker-password=${{ secrets.GHCR_PAT }} \
+            --docker-email=dev@example.com || true
+
+      # 7️⃣ Pull image
+      - name: Pull image from GHCR
+        run: |
+          docker pull ${{ env.GHCR_IMAGE }}
+          docker images
+
+      # 8️⃣ Replace tag in deployment
+      - name: Replace GITHUB_SHA in deployment.yaml
+        run: |
+          sed -i "s|\${GITHUB_SHA}|${GITHUB_SHA}|g" k8s/deployment.yaml
+
+      # 9️⃣ Deploy to Kubernetes
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl set image deployment/vendor-backend vendor-backend=${{ env.GHCR_IMAGE }}
+          kubectl rollout status deployment/vendor-backend
+
+      # 🔟 Debug on failure
+      - name: Debug pods on failure
+        if: failure()
+        run: |
+          kubectl get pods -o wide
+          kubectl describe pod $(kubectl get pods -l app=vendor-backend -o jsonpath='{.items[0].metadata.name}')
+
+      # ---------------- ELK STACK ----------------
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Add Elastic Helm repo
+        run: |
+          helm repo add elastic https://helm.elastic.co
+          helm repo update
+
+      - name: Install Elasticsearch
+        run: |
+          helm install elasticsearch elastic/elasticsearch --set replicas=1 --wait
+
+      - name: Install Kibana
+        run: |
+          helm install kibana elastic/kibana --wait
+
+      - name: Install Fluent Bit
+        run: |
+          helm repo add fluent https://fluent.github.io/helm-charts
+          helm repo update
+          helm install fluent-bit fluent/fluent-bit --wait
+
+      # ---------------- DAST ----------------
+      - name: Port-forward Vendor Service
+        run: |
+          kubectl port-forward deployment/vendor-backend 8082:8080 &
+          echo $! > .pf_pid
+          sleep 8
+
+      - name: DAST – OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'http://localhost:8082'
+        continue-on-error: true
+
+      # ---------------- CLEANUP & LOGS ----------------
+      - name: Stop port-forward & logs
+        if: always()
+        run: |
+          kill $(cat .pf_pid) || true
+          kubectl logs $(kubectl get pods -l app=vendor-backend -o jsonpath='{.items[0].metadata.name}')
